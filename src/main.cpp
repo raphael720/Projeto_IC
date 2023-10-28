@@ -20,6 +20,7 @@ int main() {
 
     // pegando o caminho de cada arquivo
     for (auto & arquivo : fs::directory_iterator(PATH_IN)) {
+        cout << "Instancia: " << arquivo.path() << endl;
 
         Instance* instance = new Instance();
         instance->read(arquivo.path());

@@ -9,6 +9,7 @@ using std::ios;
 using std::cout; 
 using std::endl;
 using std::string;
+using std::stoi;
 using std::getline;
 
 Instance::Instance() {
@@ -24,7 +25,7 @@ int Instance::regex_number(const string line, std::regex regex_pattern) {
     if (std::regex_search(line, correspondencias, regex_pattern)) {
         for (auto correspondencia : correspondencias) {
             std::string numero = correspondencia.str();
-            int value = std::stoi(numero); // Converte a string para um inteiro
+            int value = stoi(numero); // Converte a string para um inteiro
             return value;
         }
     }
@@ -42,7 +43,15 @@ void Instance::dot_regex(const string line, vector<vector<int>>& matrix) {
         string value = correspondencias[3].str();
 
         matrix[stoi(index_i)-1][stoi(index_j)-1] = stoi(value);
+        matrix[stoi(index_j)-1][stoi(index_i)-1] = stoi(value);
     }
+}
+
+int Instance::get_tab_number(const string line, const string delimiter) {
+    int pos = line.find(delimiter);
+    int first = stoi(line.substr(0, pos));
+    int second = stoi(line.substr(pos + 1, line.length()));
+    return second;
 }
 
 void Instance::read(string path) {
@@ -84,10 +93,7 @@ void Instance::read(string path) {
     string delimiter = "	";
     for (int j = 0; j < this->numberOfItens; j++) {
         getline(file, line);
-        int pos = line.find(delimiter);
-        int first = stoi(line.substr(0, pos));
-        int second = stoi(line.substr(pos + 1, line.length()));
-        this->width_array.push_back(second);
+        this->width_array.push_back(this->get_tab_number(line, delimiter));
     }
 
     // Pulando linhas
@@ -107,26 +113,64 @@ void Instance::read(string path) {
     // pegando os beneficios de cada item p(j)
     for (int j = 0; j < this->numberOfItens; j++) {
         getline(file, line);
-        int pos = line.find(delimiter);
-        int first = stoi(line.substr(0, pos));
-        int second = stoi(line.substr(pos + 1, line.length()));
-        this->array_p.push_back(second);
+        this->array_p.push_back(this->get_tab_number(line, delimiter));
     }
 
     // Pulando linhas
     getline(file, line);
     getline(file, line);
+    cout << "Line: " << line << endl;
 
+    // Pegnado a matriz Q = pp(i,j)
     vector<vector<int>> matrix_aux(
         this->numberOfItens, vector<int> (this->numberOfItens, 0)
     );
 
-    for (int j = 0; j < this->numberOfItens; j++) {
+    int PA = ((this->numberOfItens + 1) * this->numberOfItens) / 2;
+
+    for (int j = 0; j < PA; j++) {
         getline(file, line);
         this->dot_regex(line, matrix_aux);
     }
 
     this->matrix_q = matrix_aux;
+
+    // Não esta pegando todos os valores 
+
+    // Pegando as classes dos itens
+    getline(file, line);
+    getline(file, line);
+
+    regex_pattern = "((\\d+)\\.(\\d+)=(\\d+))";
+    std::smatch correspondencias;
+    for (int j = 0; j < this->numberOfItens; j++) {
+        getline(file, line);
+        if (std::regex_search(line, correspondencias, regex_pattern)) {
+            string classe = correspondencias[1].str();
+            string item = correspondencias[2].str();
+            string value = correspondencias[3].str();
+
+            this->array_t.push_back(stoi(classe));
+        }
+    }
+
+    // Pegando os setup time das classes
+    getline(file, line);
+    getline(file, line);
+
+    for (int j = 0; j < this->numberOfClass; j++) {
+        getline(file, line);
+        this->array_s.push_back(this->get_tab_number(line, delimiter));
+    }
+
+    // Pegando o número máximo de mochilas às quais os itens em classe r pode ser atribuída
+    getline(file, line);
+    getline(file, line);
+
+    for (int j = 0; j < this->numberOfClass; j++) {
+        getline(file, line);
+        this->array_nr.push_back(this->get_tab_number(line, delimiter));
+    }
 
     file.close();
 };
@@ -155,6 +199,24 @@ void Instance::describe() {
             cout << *i << " ";
         }
         cout << "\n";
+    }
+    cout << "\n";
+
+    cout << "A lista de facilidades t(r,j): " << endl;
+    for (int ele : this->array_t) {
+        cout << ele << " ";
+    }
+    cout << "\n";
+
+    cout << "A lista de facilidades s(r): " << endl;
+    for (int ele : this->array_s) {
+        cout << ele << " ";
+    }
+    cout << "\n";
+
+    cout << "A lista de facilidades nr(r): " << endl;
+    for (int ele : this->array_nr) {
+        cout << ele << " ";
     }
     cout << "\n";
 };

@@ -20,6 +20,9 @@ class Instance {
     public:
         vector<int> width_array;
         vector<int> array_p;
+        vector<int> array_t; 
+        vector<int> array_s; 
+        vector<int> array_nr; 
         vector<vector<int>> matrix_q; 
 
         Instance();
@@ -28,6 +31,7 @@ class Instance {
         void write(std::string path);
         int regex_number(const std::string line, std::regex regex_pattern);
         void dot_regex(const std::string line, vector<vector<int>>& matrix);
+        int get_tab_number(const std::string line, const std::string delimiter);
         void describe();
         int getNumberOfItens();
         int getNumberOfKnapSack();
