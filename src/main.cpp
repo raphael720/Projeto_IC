@@ -21,9 +21,10 @@ int main() {
     // pegando o caminho de cada arquivo
     for (auto & arquivo : fs::directory_iterator(PATH_IN)) {
         cout << "Instancia: " << arquivo.path() << endl;
+        std::string test = "in/8_2.inc";
 
         Instance* instance = new Instance();
-        instance->read(arquivo.path());
+        instance->read(test);
         instance->describe();
 
         delete instance;

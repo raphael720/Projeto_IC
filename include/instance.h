@@ -17,6 +17,7 @@ class Instance {
         int numberOfKnapSack;
         int numberOfClass;
         int capacityOfKnapSack;
+        int epsilon;
     public:
         vector<int> width_array;
         vector<int> array_p;
@@ -24,19 +25,26 @@ class Instance {
         vector<int> array_s; 
         vector<int> array_nr; 
         vector<vector<int>> matrix_q; 
+        //vector<vector<int>> matrix_psi; 
+        int **matrix_psi; 
+        //vector<vector<int>> matrix_sigma; 
+        int **matrix_sigma; 
 
         Instance();
         ~Instance();
         void read(std::string path);
         void write(std::string path);
         int regex_number(const std::string line, std::regex regex_pattern);
-        void dot_regex(const std::string line, vector<vector<int>>& matrix);
+        void dot_regex(const std::string line, vector<vector<int>>& matrix, int flag);
+        void dot_regex_dynamic(const std::string line, int** matrix);
         int get_tab_number(const std::string line, const std::string delimiter);
+        void calculate_epsilon();
         void describe();
         int getNumberOfItens();
         int getNumberOfKnapSack();
         int getNumberOfClass();
         int getCapacityOfKnapSack();
+        int getEpsilon();
         std::string getName();
 };
 

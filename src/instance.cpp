@@ -17,7 +17,15 @@ Instance::Instance() {
 };
 
 Instance::~Instance() {
-    
+    for (int i = 0; i < this->numberOfClass; i++) {
+        delete[] this->matrix_psi[i];
+    }
+    delete[] this->matrix_psi;
+
+    for (int i = 0; i < this->numberOfClass; i++) {
+        delete[] this->matrix_sigma[i];
+    }
+    delete[] this->matrix_sigma;
 };
 
 int Instance::regex_number(const string line, std::regex regex_pattern) {
@@ -33,7 +41,25 @@ int Instance::regex_number(const string line, std::regex regex_pattern) {
     return -1;
 };
 
-void Instance::dot_regex(const string line, vector<vector<int>>& matrix) {
+void Instance::dot_regex(const string line, vector<vector<int>>& matrix, int flag = 0) {
+    std::regex regex_pattern(R"((\d+)\.(\d+)=(\d+))");
+
+    std::smatch correspondencias;
+    if (std::regex_search(line, correspondencias, regex_pattern)) {
+        string index_i = correspondencias[1].str();
+        string index_j = correspondencias[2].str();
+        string value = correspondencias[3].str();
+
+        if (flag == 0) {
+            matrix[stoi(index_i)-1][stoi(index_j)-1] = stoi(value);
+            matrix[stoi(index_j)-1][stoi(index_i)-1] = stoi(value);
+        } else {
+            matrix[stoi(index_i)-1][stoi(index_j)-1] = stoi(value);
+        }
+    }
+}
+
+void Instance::dot_regex_dynamic(const string line, int** matrix) {
     std::regex regex_pattern(R"((\d+)\.(\d+)=(\d+))");
 
     std::smatch correspondencias;
@@ -43,8 +69,7 @@ void Instance::dot_regex(const string line, vector<vector<int>>& matrix) {
         string value = correspondencias[3].str();
 
         matrix[stoi(index_i)-1][stoi(index_j)-1] = stoi(value);
-        matrix[stoi(index_j)-1][stoi(index_i)-1] = stoi(value);
-    }
+        }
 }
 
 int Instance::get_tab_number(const string line, const string delimiter) {
@@ -119,7 +144,6 @@ void Instance::read(string path) {
     // Pulando linhas
     getline(file, line);
     getline(file, line);
-    cout << "Line: " << line << endl;
 
     // Pegnado a matriz Q = pp(i,j)
     vector<vector<int>> matrix_aux(
@@ -127,15 +151,14 @@ void Instance::read(string path) {
     );
 
     int PA = ((this->numberOfItens + 1) * this->numberOfItens) / 2;
+    int inter = PA - (this->numberOfItens);
 
-    for (int j = 0; j < PA; j++) {
+    for (int j = 0; j < inter; j++) {
         getline(file, line);
         this->dot_regex(line, matrix_aux);
     }
 
     this->matrix_q = matrix_aux;
-
-    // Não esta pegando todos os valores 
 
     // Pegando as classes dos itens
     getline(file, line);
@@ -143,6 +166,7 @@ void Instance::read(string path) {
 
     regex_pattern = "((\\d+)\\.(\\d+)=(\\d+))";
     std::smatch correspondencias;
+    //O array t esta sendo usado para guardar as classes dos itens 
     for (int j = 0; j < this->numberOfItens; j++) {
         getline(file, line);
         if (std::regex_search(line, correspondencias, regex_pattern)) {
@@ -171,6 +195,63 @@ void Instance::read(string path) {
         getline(file, line);
         this->array_nr.push_back(this->get_tab_number(line, delimiter));
     }
+
+    // Pulando linhas
+    getline(file, line);
+    getline(file, line);
+
+    // Pegando a matriz psi
+    int **matrix_aux2 = new int*[this->numberOfClass];
+
+    for (int i = 0; i < this->numberOfClass; i++) {
+        matrix_aux2[i] = new int[this->numberOfKnapSack];
+    }
+
+    for (int r = 0; r < this->numberOfClass; r++) {
+        getline(file, line);
+        this->dot_regex_dynamic(line, matrix_aux2);
+    }
+
+    this->matrix_psi = matrix_aux2;
+
+    // vector<vector<int>> matrix_aux2(
+    //     this->numberOfClass, vector<int> (this->numberOfKnapSack, 0)
+    // );
+
+    // for (int r = 0; r < this->numberOfClass * this->numberOfKnapSack; r++) {
+    //     getline(file, line);
+    //     this->dot_regex(line, matrix_aux2, 1);
+    // }
+
+    // this->matrix_psi = matrix_aux2;
+
+    // Pulando linhas
+    getline(file, line);
+    getline(file, line);
+
+    // Pegando a matriz sigma
+    int **matrix_aux3 = new int*[this->numberOfClass];
+
+    for (int i = 0; i < this->numberOfClass; i++) {
+        matrix_aux3[i] = new int[this->numberOfKnapSack];
+    }
+
+    for (int r = 0; r < this->numberOfClass; r++) {
+        getline(file, line);
+        this->dot_regex_dynamic(line, matrix_aux3);
+    }
+
+    this->matrix_sigma = matrix_aux3;
+    // vector<vector<int>> matrix_aux3(
+    //     this->numberOfClass, vector<int> (this->numberOfKnapSack, 0)
+    // );
+
+    // for (int r = 0; r < this->numberOfClass * this->numberOfKnapSack; r++) {
+    //     getline(file, line);
+    //     this->dot_regex(line, matrix_aux3, 1);
+    // }
+
+    // this->matrix_sigma = matrix_aux3;
 
     file.close();
 };
@@ -219,6 +300,24 @@ void Instance::describe() {
         cout << ele << " ";
     }
     cout << "\n";
+
+    // cout << "A matriz com os valores psi(r,k): " << endl;
+    // for (auto elemento : this->matrix_psi) {
+    //     for (auto i = elemento.begin(); i != elemento.end(); i++) {
+    //         cout << *i << " ";
+    //     }
+    //     cout << "\n";
+    // }
+    // cout << "\n";
+
+    // cout << "A matriz com os valores sigma(r,k): " << endl;
+    // for (auto elemento : this->matrix_sigma) {
+    //     for (auto i = elemento.begin(); i != elemento.end(); i++) {
+    //         cout << *i << " ";
+    //     }
+    //     cout << "\n";
+    // }
+    // cout << "\n";
 };
 
 void Instance::write(std::string path) {
@@ -247,6 +346,19 @@ void Instance::write(std::string path) {
 //     cout << "\n";
 // };
 
+// Calculate the epsilon value = epsilon(j,k)=sum(r,t(r,j)*sigma(r,k))
+void Instance::calculate_epsilon() {
+    int epsilon = 0;
+    for (int j = 0; j < this->numberOfItens; j++) {
+        for (int k = 0; k < this->numberOfKnapSack; k++) {
+            for (int r = 0; r < this->numberOfClass; r++) {
+                epsilon += this->array_t[r] * this->matrix_q[r][k]; // trocar isso aqui depois
+            }
+        }
+    }
+    this->epsilon = epsilon;
+};
+
 int Instance::getNumberOfItens() {
     return this->numberOfItens;
 };
@@ -261,4 +373,8 @@ int Instance::getNumberOfClass() {
 
 int Instance::getCapacityOfKnapSack() {
     return this->capacityOfKnapSack;
+};
+
+int Instance::getEpsilon() {
+    return this->epsilon;
 };
