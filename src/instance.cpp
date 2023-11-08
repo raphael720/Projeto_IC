@@ -33,6 +33,7 @@ int Instance::regex_number(const string line, std::regex regex_pattern) {
     if (std::regex_search(line, correspondencias, regex_pattern)) {
         for (auto correspondencia : correspondencias) {
             std::string numero = correspondencia.str();
+            numero = numero.substr(1, numero.length());
             int value = stoi(numero); // Converte a string para um inteiro
             return value;
         }
@@ -41,35 +42,44 @@ int Instance::regex_number(const string line, std::regex regex_pattern) {
     return -1;
 };
 
-void Instance::dot_regex(const string line, vector<vector<int>>& matrix, int flag = 0) {
-    std::regex regex_pattern(R"((\d+)\.(\d+)=(\d+))");
-
+void Instance::dot_regex(const string line, vector<vector<int>>& matrix, std::regex regex_pattern) {
     std::smatch correspondencias;
-    if (std::regex_search(line, correspondencias, regex_pattern)) {
-        string index_i = correspondencias[1].str();
-        string index_j = correspondencias[2].str();
-        string value = correspondencias[3].str();
 
-        if (flag == 0) {
-            matrix[stoi(index_i)-1][stoi(index_j)-1] = stoi(value);
-            matrix[stoi(index_j)-1][stoi(index_i)-1] = stoi(value);
-        } else {
-            matrix[stoi(index_i)-1][stoi(index_j)-1] = stoi(value);
-        }
-    }
-}
-
-void Instance::dot_regex_dynamic(const string line, int** matrix) {
-    std::regex regex_pattern(R"((\d+)\.(\d+)=(\d+))");
-
-    std::smatch correspondencias;
     if (std::regex_search(line, correspondencias, regex_pattern)) {
         string index_i = correspondencias[1].str();
         string index_j = correspondencias[2].str();
         string value = correspondencias[3].str();
 
         matrix[stoi(index_i)-1][stoi(index_j)-1] = stoi(value);
-        }
+        matrix[stoi(index_j)-1][stoi(index_i)-1] = stoi(value);
+    }
+
+}
+
+void Instance::dot_regex_dynamic_int(const string line, int** matrix, std::regex regex_pattern) {
+    std::smatch correspondencias;
+
+    if (std::regex_search(line, correspondencias, regex_pattern)) {
+        string index_i = correspondencias[1].str();
+        string index_j = correspondencias[2].str();
+        string value = correspondencias[3].str();
+
+        cout << index_i << " " << index_j << " " << value << endl;
+
+        matrix[stoi(index_i)-1][stoi(index_j)-1] = stoi(value);
+    }
+}
+
+void Instance::dot_regex_dynamic_float(const string line, float** matrix, std::regex regex_pattern) {
+    std::smatch correspondencias;
+
+    if (std::regex_search(line, correspondencias, regex_pattern)) {
+        string index_i = correspondencias[1].str();
+        string index_j = correspondencias[2].str();
+        string value = correspondencias[3].str();
+
+        matrix[stoi(index_i)-1][stoi(index_j)-1] = std::stof(value);
+    }
 }
 
 int Instance::get_tab_number(const string line, const string delimiter) {
@@ -95,7 +105,7 @@ void Instance::read(string path) {
     // Pulando o sets do arquivo
     getline(file, line);
 
-    std::regex regex_pattern("([\\d]{2,})");
+    std::regex regex_pattern("(\\*[\\d]{1,})");
 
     // pegando a quantidade j de itens
     getline(file, line);
@@ -146,6 +156,7 @@ void Instance::read(string path) {
     getline(file, line);
 
     // Pegnado a matriz Q = pp(i,j)
+    regex_pattern = R"((\d+)\.(\d+)=(\d+))";
     vector<vector<int>> matrix_aux(
         this->numberOfItens, vector<int> (this->numberOfItens, 0)
     );
@@ -155,7 +166,7 @@ void Instance::read(string path) {
 
     for (int j = 0; j < inter; j++) {
         getline(file, line);
-        this->dot_regex(line, matrix_aux);
+        this->dot_regex(line, matrix_aux, regex_pattern);
     }
 
     this->matrix_q = matrix_aux;
@@ -201,29 +212,19 @@ void Instance::read(string path) {
     getline(file, line);
 
     // Pegando a matriz psi
-    int **matrix_aux2 = new int*[this->numberOfClass];
+    float **matrix_aux2 = new float*[this->numberOfClass];
+    regex_pattern = R"((\d+)\.(\d+)=(\d+\.\d+|\d+))";
 
     for (int i = 0; i < this->numberOfClass; i++) {
-        matrix_aux2[i] = new int[this->numberOfKnapSack];
+        matrix_aux2[i] = new float[this->numberOfKnapSack];
     }
 
-    for (int r = 0; r < this->numberOfClass; r++) {
+    for (int r = 0; r < this->numberOfClass*this->numberOfKnapSack; r++) {
         getline(file, line);
-        this->dot_regex_dynamic(line, matrix_aux2);
+        this->dot_regex_dynamic_float(line, matrix_aux2, regex_pattern);
     }
 
     this->matrix_psi = matrix_aux2;
-
-    // vector<vector<int>> matrix_aux2(
-    //     this->numberOfClass, vector<int> (this->numberOfKnapSack, 0)
-    // );
-
-    // for (int r = 0; r < this->numberOfClass * this->numberOfKnapSack; r++) {
-    //     getline(file, line);
-    //     this->dot_regex(line, matrix_aux2, 1);
-    // }
-
-    // this->matrix_psi = matrix_aux2;
 
     // Pulando linhas
     getline(file, line);
@@ -231,27 +232,18 @@ void Instance::read(string path) {
 
     // Pegando a matriz sigma
     int **matrix_aux3 = new int*[this->numberOfClass];
+    regex_pattern = R"((\d+)\.(\d+)=(\d+))";
 
     for (int i = 0; i < this->numberOfClass; i++) {
         matrix_aux3[i] = new int[this->numberOfKnapSack];
     }
 
-    for (int r = 0; r < this->numberOfClass; r++) {
+    for (int r = 0; r < this->numberOfClass*this->numberOfKnapSack; r++) {
         getline(file, line);
-        this->dot_regex_dynamic(line, matrix_aux3);
+        this->dot_regex_dynamic_int(line, matrix_aux3, regex_pattern);
     }
 
     this->matrix_sigma = matrix_aux3;
-    // vector<vector<int>> matrix_aux3(
-    //     this->numberOfClass, vector<int> (this->numberOfKnapSack, 0)
-    // );
-
-    // for (int r = 0; r < this->numberOfClass * this->numberOfKnapSack; r++) {
-    //     getline(file, line);
-    //     this->dot_regex(line, matrix_aux3, 1);
-    // }
-
-    // this->matrix_sigma = matrix_aux3;
 
     file.close();
 };
@@ -301,23 +293,23 @@ void Instance::describe() {
     }
     cout << "\n";
 
-    // cout << "A matriz com os valores psi(r,k): " << endl;
-    // for (auto elemento : this->matrix_psi) {
-    //     for (auto i = elemento.begin(); i != elemento.end(); i++) {
-    //         cout << *i << " ";
-    //     }
-    //     cout << "\n";
-    // }
-    // cout << "\n";
+    cout << "A matriz com os valores psi(r,k): " << endl;
+    for (int i = 0; i < this->numberOfClass; i++) {
+        for (int j = 0; j < this->numberOfKnapSack; j++) {
+            cout << this->matrix_psi[i][j] << " ";
+        }
+        cout << "\n";
+    }
+    cout << "\n";
 
-    // cout << "A matriz com os valores sigma(r,k): " << endl;
-    // for (auto elemento : this->matrix_sigma) {
-    //     for (auto i = elemento.begin(); i != elemento.end(); i++) {
-    //         cout << *i << " ";
-    //     }
-    //     cout << "\n";
-    // }
-    // cout << "\n";
+    cout << "A matriz com os valores sigma(r,k): " << endl;
+    for (int i = 0; i < this->numberOfClass; i++) {
+        for (int j = 0; j < this->numberOfKnapSack; j++) {
+            cout << this->matrix_sigma[i][j] << " ";
+        }
+        cout << "\n";
+    }  
+    cout << "\n";
 };
 
 void Instance::write(std::string path) {

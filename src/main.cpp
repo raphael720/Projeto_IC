@@ -8,6 +8,7 @@
 #include "../include/methodologies.h"
 
 #define PATH_IN "in"
+#define PATH_TEST "test"
 #define PATH_OUT "out"
 
 using std::ios; 
@@ -19,12 +20,11 @@ namespace fs = std::filesystem;
 int main() {
 
     // pegando o caminho de cada arquivo
-    for (auto & arquivo : fs::directory_iterator(PATH_IN)) {
+    for (auto & arquivo : fs::directory_iterator(PATH_TEST)) {
         cout << "Instancia: " << arquivo.path() << endl;
-        std::string test = "in/8_2.inc";
 
         Instance* instance = new Instance();
-        instance->read(test);
+        instance->read(arquivo.path());
         instance->describe();
 
         delete instance;
