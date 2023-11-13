@@ -15,6 +15,7 @@ class Knapsack {
         Knapsack();
         Knapsack(int capacity);
         ~Knapsack();
+
         bool addIten(std::pair<int, int> item);
         void setWeight(int weight);
         void setCapacity(int capacity);
