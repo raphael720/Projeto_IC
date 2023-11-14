@@ -12,9 +12,9 @@
 #include "knapsack.h"
 #include "solution.h"
 
-void gr_huristic(Instance& instance, Knapsack& knapsack);
-int argmax(Instance& instance, Knapsack& knapsack, std::list<int> itemList);
+Solution* gr_huristic(Instance& instance);
+int argmax(Instance& instance, Knapsack& knapsack, std::vector<int> itemList);
 int density_vd(Instance& instance, Knapsack& knapsack, int item);
-std::vector<int> feasible_items_from_knapsack(Solution& solution, Instance& instance, std::list<int> itemList);
+std::vector<int> feasible_items_from_knapsack(Solution& solution, Instance& instance, std::vector<int> itemList);
 
 #endif

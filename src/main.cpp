@@ -23,12 +23,15 @@ int main() {
     for (auto & arquivo : fs::directory_iterator(PATH_TEST)) {
         cout << "Instancia: " << arquivo.path() << endl;
 
-        Instance* instance = new Instance();
-        instance->read(arquivo.path());
-        instance->describe();
+        Instance instance = Instance();
+        instance.read(arquivo.path());
+        // instance.describe();
 
-        delete instance;
-        return 0;
+        Solution* solution = gr_huristic(instance);
+        std::cout << solution->knapsacks.size() << "- QNTD MOCHILA" << std::endl;
+        delete solution;
+        // delete instance;
+        // return 0;
     }
 
     return 0;

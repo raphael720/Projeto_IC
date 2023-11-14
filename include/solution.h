@@ -3,24 +3,24 @@
 
 #include <iostream>
 #include <vector>
+#include <list>
 
 #include "instance.h"
 #include "knapsack.h"
 
 class Solution {
   private:
-    Knapsack* knapsacks;
     int score;
   public:
+    std::list<Knapsack> knapsacks;
     std::vector<std::vector<int>> knapsacksClasses;
 
     Solution();
     ~Solution();
 
-    void setKnapsacks(Knapsack *knapsacks);
-    Knapsack* getKnapsacks();
     void setScore(int score);
     int getScore();
+    void refreshScore();
 };
 
 #endif

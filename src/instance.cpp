@@ -64,8 +64,6 @@ void Instance::dot_regex_dynamic_int(const string line, int** matrix, std::regex
         string index_j = correspondencias[2].str();
         string value = correspondencias[3].str();
 
-        cout << index_i << " " << index_j << " " << value << endl;
-
         matrix[stoi(index_i)-1][stoi(index_j)-1] = stoi(value);
     }
 }
