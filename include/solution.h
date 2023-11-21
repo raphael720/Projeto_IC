@@ -16,6 +16,7 @@ class Solution {
     std::vector<std::vector<int>> knapsacksClasses;
 
     Solution();
+    Solution(int numberOfClasses);
     ~Solution();
 
     void setScore(int score);

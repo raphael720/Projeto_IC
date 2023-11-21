@@ -14,7 +14,7 @@ Knapsack::~Knapsack() {
 
 }
 
-bool Knapsack::addIten(std::pair<int, int> item) {
+bool Knapsack::addItem(std::pair<int, int> item) {
     int weight = item.first;
     int elem = item.second;
     
