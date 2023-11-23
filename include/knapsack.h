@@ -9,20 +9,19 @@ class Knapsack {
     private:
         int weight;
         int capacity;
-        std::list<int> itens;
+        std::list<int> items;
 
     public:
         Knapsack();
         Knapsack(int capacity);
         ~Knapsack();
 
-        bool addIten(std::pair<int, int> item);
+        bool addItem(std::pair<int, int> item);
         void setWeight(int weight);
         void setCapacity(int capacity);
         std::list<int> getItens();
         int getWeight();
         int getCapacity();
-
 };
 
 #endif

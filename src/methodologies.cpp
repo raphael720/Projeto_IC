@@ -27,7 +27,7 @@ Solution* gr_huristic(Instance& instance) {
             int itemClass = instance.array_t[item];
 
             solution->knapsacksClasses[itemClass].push_back(knapsackIndex);
-            choosedKnapsack.addIten(std::make_pair(instance.width_array[item], item));
+            choosedKnapsack.addItem(std::make_pair(instance.width_array[item], item));
             std::cout << "CAPACIDADE -> " << choosedKnapsack.getCapacity() << std::endl;
 
             std::swap(itemList[item], itemList.back());
