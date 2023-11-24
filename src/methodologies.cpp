@@ -1,10 +1,9 @@
-#include "../include/methodologies.h"
 #include <iterator>
-
+#include "../include/methodologies.h"
 
 Solution* gr_huristic(Instance& instance) {
-    std::vector<Knapsack> knapsackList(instance.getNumberOfKnapSack(), 0);
-    std::vector<int> itemList(instance.getNumberOfItens(), 0);
+    EfficientArray<Knapsack> knapsackList(instance.getNumberOfKnapSack());
+    EfficientArray<int> itemList(instance.getNumberOfItens());
 
     Solution* solution = new Solution();
 
@@ -12,50 +11,48 @@ Solution* gr_huristic(Instance& instance) {
 
     for (int i = 0; i < instance.getNumberOfKnapSack(); i++) {
         Knapsack knapsack = Knapsack();
-        knapsackList[i] = knapsack;
+        knapsackList.array[i] = knapsack;
     }
 
     std::cout << "--------------------- 2 ------------------" << std::endl;
 
-    for (int i = 0; i < instance.getNumberOfItens(); i++) itemList[i] = i;
+    for (int i = 0; i < instance.getNumberOfItens(); i++) itemList.array[i] = i+1;
 
     std::cout << "--------------------- 3 ------------------" << std::endl;
 
-    while (knapsackList.size() > 0) {
-        std::vector<int> feasibleItems = feasible_items_from_knapsack(*solution, instance, itemList);
+    while (knapsackList.getSize() > 0) {
+        EfficientArray<int> feasibleItems = feasible_items_from_knapsack(*solution, instance, itemList);
         std::cout << "--------------------- 4 ------------------" << std::endl;
-        int knapsackIndex = rand() % instance.getNumberOfKnapSack();
+        int knapsackIndex = rand() % knapsackList.getSize();
         std::cout << "--------------------- 5 ------------------" << std::endl;
-        Knapsack choosedKnapsack = knapsackList[knapsackIndex];
+        Knapsack choosedKnapsack = knapsackList.array[knapsackIndex];
         std::cout << "--------------------- 6 ------------------" << std::endl;
 
-        while (feasibleItems.size() > 0) {
+        while (feasibleItems.getSize() > 0) {
             int item = argmax(instance, choosedKnapsack, itemList);
             if(item == -1) continue;
 
             choosedKnapsack.addIten(std::make_pair(instance.width_array[item], item));
 
-            std::swap(itemList[item], itemList.back());
-            itemList.pop_back();
+            itemList.pop(item);
 
-            std::swap(feasibleItems[item], feasibleItems.back());
-            feasibleItems.pop_back();
+            feasibleItems.pop(item);
         }
 
         solution->knapsacks.push_back(choosedKnapsack);
 
-        std::swap(knapsackList[knapsackIndex], knapsackList.back());
-        knapsackList.pop_back();
+        knapsackList.pop(knapsackIndex);
     }
 
     return solution;
 }
 
-int argmax(Instance& instance, Knapsack& knapsack, std::vector<int> itemList) {
+template <typename T>
+int argmax(Instance& instance, Knapsack& knapsack, EfficientArray<T>& itemList) {
     std::multimap<int, int> itemsDensities;
   
-    for(auto item : itemList) 
-        itemsDensities.insert(std::pair<int, int>(density_vd(instance, knapsack, item), item));
+    for(int i = 0; i < itemList.getSize(); i++) 
+        itemsDensities.insert(std::pair<int, int>(density_vd(instance, knapsack, itemList.array[i]), itemList.array[i]));
     
     std::multimap<int, int>::reverse_iterator rit;
     
@@ -74,15 +71,20 @@ int density_vd(Instance& instance, Knapsack& knapsack, int item) {
     return (instance.array_p[item] + somatorio) / instance.width_array[item];
 }
 
-std::vector<int> feasible_items_from_knapsack(Solution& solution, Instance& instance, std::vector<int> itemList) {
-    std::vector<int> feasibleItems;
+template <typename T>
+EfficientArray<T> feasible_items_from_knapsack(Solution& solution, Instance& instance, EfficientArray<T>& itemList) {
+    EfficientArray<int> feasibleItems;
 
-    for (auto item : itemList) {
-        std::cout << "--------------------- 3.1 ------------------ " << item << std::endl;
-        int itemClass = instance.array_t[item];
-        std::cout << "--------------------- 3.2 ------------------ " << item << std::endl;
-        if(solution.knapsacksClasses[itemClass].size() < 2) { feasibleItems.push_back(item) ; }
-        std::cout << "--------------------- 3.3 ------------------ " << item << std::endl;
+    for (int i = 0; i < itemList.getSize(); i++) {
+        std::cout << "--------------------- 3.1 ------------------ " << itemList.array[i] << std::endl;
+
+        int itemClass = instance.array_t[itemList.array[i]-1];
+        
+        std::cout << "--------------------- 3.2 ------------------ " << itemList.array[i] << std::endl;
+
+        if(solution.knapsacksClasses[itemClass].size() < 2) feasibleItems.push_back(itemList.array[i]);
+
+        std::cout << "--------------------- 3.3 ------------------ " << itemList.array[i] << std::endl;
     }
 
     return feasibleItems;

@@ -1,21 +1,24 @@
 #include "../include/efficientArray.h"
-
-EfficientArray::EfficientArray() {
-    this->array = new int[0];
+template <typename T>
+EfficientArray<T>::EfficientArray() {
+    this->array = new T[0]();
     this->size = 0;
 }
 
-EfficientArray::EfficientArray(int size) {
-    this->array = new int[size];
+template <typename T>
+EfficientArray<T>::EfficientArray(int size) {
+    this->array = new T[size];
     this->size = size;
 }
 
-EfficientArray::~EfficientArray() {
+template <typename T>
+EfficientArray<T>::~EfficientArray() {
     delete[] this->array;
 }
 
-void EfficientArray::push_back(int value) {
-    int* newArray = new int[this->size + 1];
+template <typename T>
+void EfficientArray<T>::push_back(const T& value) {
+    T* newArray = new T[this->size + 1];
 
     for(int i = 0; i < this->size; i++) newArray[i] = this->array[i];
 
@@ -27,8 +30,9 @@ void EfficientArray::push_back(int value) {
     this->size++;
 }
 
-void EfficientArray::pop() {
-    int* newArray = new int[this->size - 1];
+template <typename T>
+void EfficientArray<T>::pop() {
+    T* newArray = new T[this->size - 1];
 
     for(int i = 0; i < this->size - 1; i++) newArray[i] = this->array[i];
 
@@ -38,22 +42,33 @@ void EfficientArray::pop() {
     this->size--;
 }
 
-void EfficientArray::pop(int index) {
-    int last_item = this->array[this->size - 1];
-    this->array[this->size - 1] = this->array[index];
-    this->array[index] = last_item;
+template <typename T>
+void EfficientArray<T>::pop(int index) {
+    if (index < 0 || index >= this->size) {
+        std::cerr << "Erro: Índice inválido\n";
+        return;
+    }
+
+    T* last_item = &(this->array[this->size - 1]);
+    T* item_to_remove = &(this->array[index]);
+
+    std::swap(*item_to_remove, *last_item);
 
     this->size--;
 }
 
-void EfficientArray::clear() {
+template <typename T>
+void EfficientArray<T>::clear() {
     delete[] this->array;
 
     this->array = nullptr;
     this->size = 0;
 }
 
-int EfficientArray::getSize() const {
+template <typename T>
+int EfficientArray<T>::getSize() const {
     return this->size;
 }
 
+template class EfficientArray<int>;
+template class EfficientArray<Knapsack>;

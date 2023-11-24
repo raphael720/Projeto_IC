@@ -11,10 +11,11 @@
 #include "instance.h"
 #include "knapsack.h"
 #include "solution.h"
+#include "efficientArray.h"
 
 Solution* gr_huristic(Instance& instance);
-int argmax(Instance& instance, Knapsack& knapsack, std::vector<int> itemList);
+template <typename T> int argmax(Instance& instance, Knapsack& knapsack, EfficientArray<T>& itemList);
 int density_vd(Instance& instance, Knapsack& knapsack, int item);
-std::vector<int> feasible_items_from_knapsack(Solution& solution, Instance& instance, std::vector<int> itemList);
+template <typename T> EfficientArray<T> feasible_items_from_knapsack(Solution& solution, Instance& instance, EfficientArray<T>& itemList);
 
 #endif
