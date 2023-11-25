@@ -25,7 +25,7 @@ Solution* gr_huristic(Instance& instance) {
         std::cout << "--------------------- 6 ------------------" << std::endl;
 
         while (feasibleItems.getSize() > 0) {
-            int item = argmax(instance, choosedKnapsack, itemList);
+            int item = argmax(instance, choosedKnapsack, feasibleItems);
             if(item == -1) continue;
 
             int itemClass = instance.array_t[item];
@@ -81,7 +81,8 @@ EfficientArray<T> feasible_items_from_knapsack(Solution& solution, Instance& ins
         
         std::cout << "--------------------- 3.2 ------------------ " << itemList.array[i] << std::endl;
 
-        if(solution.knapsacksClasses[itemClass].size() < 2) feasibleItems.push_back(itemList.array[i]);
+        if(solution.knapsacksClasses[itemClass].size() < instance.array_nr[itemClass])
+            feasibleItems.push_back(itemList.array[i]);
 
         std::cout << "--------------------- 3.3 ------------------ " << itemList.array[i] << std::endl;
     }

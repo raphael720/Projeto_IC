@@ -9,7 +9,7 @@ class Knapsack {
     private:
         int weight;
         int capacity;
-        std::list<int> items;
+        std::list<int> itens;
 
     public:
         Knapsack();
