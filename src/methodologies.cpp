@@ -12,7 +12,7 @@ Solution* gr_huristic(Instance& instance) {
         knapsackList.array[i] = knapsack;
     }
 
-    for (int i = 0; i < instance.getNumberOfItens(); i++) itemList.array[i] = i+1;
+    for (int i = 0; i < instance.getNumberOfItens(); i++) itemList.array[i] = i;
 
     std::cout << "--------------------- 3 ------------------" << std::endl;
 
@@ -24,18 +24,33 @@ Solution* gr_huristic(Instance& instance) {
         Knapsack choosedKnapsack = knapsackList.array[knapsackIndex];
         std::cout << "--------------------- 6 ------------------" << std::endl;
 
+        // Nossa abordagem para de usar EfficientArray para os itens não foi boa, pois 
+        // quando fazemos o swap de um item 9 com o item 26, o item 9 vai para a posição 26
+        // e o item 26 vai para a posição 9. E, com isso, quando o argmax é chamado e ele retornar o item 26,
+        // nos não conseguimos acesssar o item 26, pois não temos como acessar mais esse index.
         while (feasibleItems.getSize() > 0) {
-            int item = argmax(instance, choosedKnapsack, feasibleItems);
-            if(item == -1) continue;
+            // vou ter que pegar o index do item
+            int indexItem = argmax(instance, choosedKnapsack, feasibleItems);
+            if(indexItem == -1) continue;
+
+            int item = feasibleItems.array[indexItem];
 
             int itemClass = instance.array_t[item];
+            std::cout << "--------------------- 7 ------------------" << std::endl;
 
             solution->knapsacksClasses[itemClass].push_back(knapsackIndex);
+            std::cout << "--------------------- 8 ------------------" << std::endl;
+
             choosedKnapsack.addItem(std::make_pair(instance.width_array[item], item));
+            std::cout << "--------------------- 9 ------------------" << std::endl;
 
-            itemList.pop(item);
+            std::cout << "Item: " << item << std::endl;
+            std::cout << "itemList: " << itemList.getSize() << std::endl;
+            std::cout << "feasibleItems: " << feasibleItems.getSize() << std::endl;
 
-            feasibleItems.pop(item);
+            itemList.pop(indexItem);
+
+            feasibleItems.pop(indexItem);
         }
 
         solution->knapsacks.push_back(choosedKnapsack);
@@ -56,7 +71,9 @@ int argmax(Instance& instance, Knapsack& knapsack, EfficientArray<T>& itemList) 
     std::multimap<int, int>::reverse_iterator rit;
     
     for (rit = itemsDensities.rbegin() ; rit != itemsDensities.rend() ; ++rit)
-        return rit->second;
+        for(int i = 0; i < itemList.getSize(); i++) 
+            if (itemList.array[i] == rit->second) 
+                return i;
 
     return -1;
 }
@@ -75,16 +92,11 @@ EfficientArray<T> feasible_items_from_knapsack(Solution& solution, Instance& ins
     EfficientArray<int> feasibleItems;
 
     for (int i = 0; i < itemList.getSize(); i++) {
-        std::cout << "--------------------- 3.1 ------------------ " << itemList.array[i] << std::endl;
 
-        int itemClass = instance.array_t[itemList.array[i]-1];
-        
-        std::cout << "--------------------- 3.2 ------------------ " << itemList.array[i] << std::endl;
+        int itemClass = instance.array_t[itemList.array[i]];
 
         if(solution.knapsacksClasses[itemClass].size() < instance.array_nr[itemClass])
             feasibleItems.push_back(itemList.array[i]);
-
-        std::cout << "--------------------- 3.3 ------------------ " << itemList.array[i] << std::endl;
     }
 
     return feasibleItems;
