@@ -18,6 +18,7 @@ class Instance {
         int numberOfClass;
         int capacityOfKnapSack;
         int epsilon;
+        int parameter_U;
     public:
         vector<int> width_array;
         vector<int> array_p;
@@ -39,13 +40,16 @@ class Instance {
         void dot_regex_dynamic_int(const std::string line, int** matrix, std::regex regex_pattern);
         void dot_regex_dynamic_float(const std::string line, float** matrix, std::regex regex_pattern);
         int get_tab_number(const std::string line, const std::string delimiter);
+        
         void calculate_epsilon();
         void describe();
+
         int getNumberOfItens();
         int getNumberOfKnapSack();
         int getNumberOfClass();
         int getCapacityOfKnapSack();
         int getEpsilon();
+        int getParameter_U();
         std::string getName();
 };
 

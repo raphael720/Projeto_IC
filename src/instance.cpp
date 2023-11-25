@@ -117,10 +117,17 @@ void Instance::read(string path) {
     getline(file, line);
     this->numberOfClass = this->regex_number(line, regex_pattern);
 
-    // pulando as proximas 5 linhas
-    for (int i = 0; i < 5; i++) {
-        getline(file, line);
-    }
+    // pulando linhas
+    getline(file, line);
+    getline(file, line);
+
+    // pegando o parametro U
+    regex_pattern = "([\\d]+)";
+    getline(file, line);
+    this->parameter_U = this->regex_number(line, regex_pattern);
+    // pulando linhas
+    getline(file, line);
+    getline(file, line);
 
     // pegando os pesos de cada item w(j)
     string delimiter = "	";
@@ -135,7 +142,6 @@ void Instance::read(string path) {
 
     // Pegando a capacidade das monchilas
     getline(file, line);
-    regex_pattern = "([\\d]+)";
     this->capacityOfKnapSack = this->regex_number(line, regex_pattern);
 
     // pulando linhas
