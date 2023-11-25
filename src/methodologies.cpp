@@ -5,16 +5,12 @@ Solution* gr_huristic(Instance& instance) {
     EfficientArray<Knapsack> knapsackList(instance.getNumberOfKnapSack());
     EfficientArray<int> itemList(instance.getNumberOfItens());
 
-    Solution* solution = new Solution();
-
-    std::cout << "--------------------- 1 ------------------" << std::endl;
+    Solution* solution = new Solution(instance.getNumberOfClass());
 
     for (int i = 0; i < instance.getNumberOfKnapSack(); i++) {
         Knapsack knapsack = Knapsack();
         knapsackList.array[i] = knapsack;
     }
-
-    std::cout << "--------------------- 2 ------------------" << std::endl;
 
     for (int i = 0; i < instance.getNumberOfItens(); i++) itemList.array[i] = i+1;
 
@@ -32,7 +28,10 @@ Solution* gr_huristic(Instance& instance) {
             int item = argmax(instance, choosedKnapsack, itemList);
             if(item == -1) continue;
 
-            choosedKnapsack.addIten(std::make_pair(instance.width_array[item], item));
+            int itemClass = instance.array_t[item];
+
+            solution->knapsacksClasses[itemClass].push_back(knapsackIndex);
+            choosedKnapsack.addItem(std::make_pair(instance.width_array[item], item));
 
             itemList.pop(item);
 
@@ -64,7 +63,7 @@ int argmax(Instance& instance, Knapsack& knapsack, EfficientArray<T>& itemList) 
 
 int density_vd(Instance& instance, Knapsack& knapsack, int item) {
     int somatorio = 0;
-
+    
     for (auto& elem : knapsack.getItens()) 
         somatorio += instance.matrix_q[elem][item];
 

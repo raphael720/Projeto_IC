@@ -183,7 +183,7 @@ void Instance::read(string path) {
             string item = correspondencias[2].str();
             string value = correspondencias[3].str();
 
-            this->array_t.push_back(stoi(classe));
+            this->array_t.push_back(stoi(classe) - 1);
         }
     }
 
