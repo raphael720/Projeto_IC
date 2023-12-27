@@ -33,8 +33,12 @@ int Instance::regex_number(const string line, std::regex regex_pattern) {
     if (std::regex_search(line, correspondencias, regex_pattern)) {
         for (auto correspondencia : correspondencias) {
             std::string numero = correspondencia.str();
-            numero = numero.substr(1, numero.length());
+
+            if (numero[0] == '*')
+                numero = numero.substr(1, numero.length());
+
             int value = stoi(numero); // Converte a string para um inteiro
+
             return value;
         }
     }

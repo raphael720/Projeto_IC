@@ -8,7 +8,7 @@ Solution* gr_huristic(Instance& instance) {
     Solution* solution = new Solution(instance.getNumberOfClass());
 
     for (int i = 0; i < instance.getNumberOfKnapSack(); i++) {
-        Knapsack knapsack = Knapsack();
+        Knapsack knapsack = Knapsack(instance.getCapacityOfKnapSack());
         knapsackList.array[i] = knapsack;
     }
 
@@ -36,17 +36,19 @@ Solution* gr_huristic(Instance& instance) {
             int item = feasibleItems.array[indexItem];
 
             int itemClass = instance.array_t[item];
-            std::cout << "--------------------- 7 ------------------" << std::endl;
+            //std::cout << "--------------------- 7 ------------------" << std::endl;
 
             solution->knapsacksClasses[itemClass].push_back(knapsackIndex);
-            std::cout << "--------------------- 8 ------------------" << std::endl;
+            //std::cout << "--------------------- 8 ------------------" << std::endl;
 
-            choosedKnapsack.addItem(std::make_pair(instance.width_array[item], item));
-            std::cout << "--------------------- 9 ------------------" << std::endl;
+            if (choosedKnapsack.addItem(instance.width_array[item], item, instance.array_s[itemClass])) {
+                std::cout << " item entrou na mochila" << std::endl;
+            }
+            //std::cout << "--------------------- 9 ------------------" << std::endl;
 
-            std::cout << "Item: " << item << std::endl;
-            std::cout << "itemList: " << itemList.getSize() << std::endl;
-            std::cout << "feasibleItems: " << feasibleItems.getSize() << std::endl;
+            // std::cout << "Item: " << item << std::endl;
+            // std::cout << "itemList: " << itemList.getSize() << std::endl;
+            // std::cout << "feasibleItems: " << feasibleItems.getSize() << std::endl;
 
             itemList.pop(indexItem);
 

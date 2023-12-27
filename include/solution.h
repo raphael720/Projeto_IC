@@ -21,7 +21,7 @@ class Solution {
 
     void setScore(int score);
     int getScore();
-    void refreshScore();
+    void refreshScore(Instance& instance);
 };
 
 #endif

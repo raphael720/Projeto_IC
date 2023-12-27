@@ -12,8 +12,6 @@
 #define PATH_OUT "out"
 
 using std::ios; 
-using std::cout; 
-using std::endl;
 
 namespace fs = std::filesystem;
 
@@ -21,17 +19,19 @@ int main() {
 
     // pegando o caminho de cada arquivo
     for (auto & arquivo : fs::directory_iterator(PATH_TEST)) {
-        cout << "Instancia: " << arquivo.path() << endl;
+        std::cout << "Instancia: " << arquivo.path() << std::endl;
 
         Instance instance = Instance();
         instance.read(arquivo.path());
-        // instance.describe();
+        instance.describe();
 
         Solution* solution = gr_huristic(instance);
         std::cout << solution->knapsacks.size() << "- QNTD MOCHILA" << std::endl;
+
+        solution->refreshScore(instance);
+        std::cout << " Score: " << solution->getScore() << std::endl;
+
         delete solution;
-        // delete instance;
-        // return 0;
     }
 
     return 0;
