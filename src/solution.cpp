@@ -27,6 +27,10 @@ void Solution::refreshScore(Instance& instance) {
   for (auto knapsack : this->knapsacks) {
     for (auto item : knapsack.getItens()) {
       score += instance.array_p[item];
+      
+      for (auto item2 : knapsack.getItens()) {
+        score += instance.matrix_q[item][item2];
+      }
     }
   }
 

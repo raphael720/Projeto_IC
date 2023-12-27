@@ -144,7 +144,7 @@ void Instance::read(string path) {
     getline(file, line);
     getline(file, line);
 
-    // Pegando a capacidade das monchilas
+    // Pegando a capacidade das mochilas
     getline(file, line);
     this->capacityOfKnapSack = this->regex_number(line, regex_pattern);
 

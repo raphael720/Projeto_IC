@@ -15,6 +15,7 @@ Solution* gr_huristic(Instance& instance) {
     for (int i = 0; i < instance.getNumberOfItens(); i++) itemList.array[i] = i;
 
     std::cout << "--------------------- 3 ------------------" << std::endl;
+    std::vector<int> itensWithoutKnapsack;
 
     while (knapsackList.getSize() > 0) {
         EfficientArray<int> feasibleItems = feasible_items_from_knapsack(*solution, instance, itemList);
@@ -43,6 +44,9 @@ Solution* gr_huristic(Instance& instance) {
 
             if (choosedKnapsack.addItem(instance.width_array[item], item, instance.array_s[itemClass])) {
                 std::cout << " item entrou na mochila" << std::endl;
+            } else {
+                std::cout << " item não entrou na mochila" << std::endl;
+                itensWithoutKnapsack.push_back(item);
             }
             //std::cout << "--------------------- 9 ------------------" << std::endl;
 
@@ -60,6 +64,8 @@ Solution* gr_huristic(Instance& instance) {
         knapsackList.pop(knapsackIndex);
     }
 
+    std::cout << "itens sem mochila: " << itensWithoutKnapsack.size() << std::endl;
+    
     return solution;
 }
 

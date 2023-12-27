@@ -18,9 +18,7 @@ bool Knapsack::addItem(int weight, int item, int setup_class) {
     // verificar se eu posso colocar mais um item da classe r na mochila sem ultrapassar o limite nr permitido. 
     // Onde esse nr é a quanitdade de classes r que eu posso colocar em mochilas diferentes.
     int weight_final = weight + setup_class;
-    std::cout << "capacity: " << this->capacity << std::endl;
     if (weight_final < this->capacity) {
-        std::cout << "Aqui" << std::endl;
         this->weight += weight_final;
         this->capacity -= weight_final;
         this->itens.push_back(item);
